@@ -1,0 +1,17 @@
+# Sensitive configuration files
+nginx.conf
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+ssl/
+
+# Environment files
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+

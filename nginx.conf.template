@@ -1,0 +1,72 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    # Upstream server for port 8545 (Anvil running locally on EC2)
+    upstream backend_8545 {
+        server localhost:8545;
+    }
+
+    # Upstream server for port 5001 (IPFS running locally on EC2)
+    upstream backend_5001 {
+        server localhost:5001;
+    }
+
+    # Proxy for port 8545 - HTTPS (Anvil RPC)
+    server {
+        listen 8545 ssl;
+        server_name {{EC2_PUBLIC_IP}};
+
+        # SSL certificate paths (update these with your certificate paths)
+        ssl_certificate /etc/nginx/ssl/cert.pem;
+        ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+        # SSL configuration
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        location / {
+            proxy_pass http://backend_8545;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # WebSocket support (if needed)
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+    }
+
+    # Proxy for port 5001 - HTTPS (IPFS API)
+    server {
+        listen 5001 ssl;
+        server_name {{EC2_PUBLIC_IP}};
+
+        # SSL certificate paths (update these with your certificate paths)
+        ssl_certificate /etc/nginx/ssl/cert.pem;
+        ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+        # SSL configuration
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        location / {
+            proxy_pass http://backend_5001;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # WebSocket support (if needed)
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+    }
+}
+
