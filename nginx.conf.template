@@ -13,9 +13,10 @@ http {
         server localhost:5001;
     }
 
-    # Proxy for port 8545 - HTTPS (Anvil RPC)
+    # Proxy for port 7001 - HTTPS (Anvil RPC)
+    # Maps to localhost:8545 where Anvil is running
     server {
-        listen 8545 ssl;
+        listen 0.0.0.0:7001 ssl;
         server_name {{EC2_PUBLIC_IP}};
 
         # SSL certificate paths (update these with your certificate paths)
@@ -41,9 +42,10 @@ http {
         }
     }
 
-    # Proxy for port 5001 - HTTPS (IPFS API)
+    # Proxy for port 7002 - HTTPS (IPFS API)
+    # Maps to localhost:5001 where IPFS is running
     server {
-        listen 5001 ssl;
+        listen 0.0.0.0:7002 ssl;
         server_name {{EC2_PUBLIC_IP}};
 
         # SSL certificate paths (update these with your certificate paths)

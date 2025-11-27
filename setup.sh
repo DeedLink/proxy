@@ -67,11 +67,13 @@ if sudo nginx -t; then
     echo "=== Setup Complete ==="
     echo ""
     echo "Your services are now accessible at:"
-    echo "  - Anvil RPC: https://$EC2_PUBLIC_IP:8545"
-    echo "  - IPFS API:  https://$EC2_PUBLIC_IP:5001"
+    echo "  - Anvil RPC: https://$EC2_PUBLIC_IP:7001 (proxies to localhost:8545)"
+    echo "  - IPFS API:  https://$EC2_PUBLIC_IP:7002 (proxies to localhost:5001)"
     echo ""
     echo "Note: Self-signed certificates will show browser warnings."
     echo "For production, use Let's Encrypt: sudo certbot --nginx"
+    echo ""
+    echo "Important: Make sure ports 7001 and 7002 are open in your EC2 security group!"
 else
     echo "✗ Configuration test failed. Please check the errors above."
     exit 1
